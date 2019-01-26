@@ -2,16 +2,20 @@ package cz.vutbr.ubmi;
 
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.scijava.Context;
 
 import com.indago.util.ImglibUtil;
 
+import bdv.ui.panel.BigDataViewerUI;
 import bdv.util.AxisOrder;
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandlePanel;
+import bdv.util.BdvOptions;
 import bdv.util.BdvSource;
 import net.imagej.ops.OpService;
 import net.imglib2.Cursor;
@@ -37,9 +41,13 @@ import java.awt.GridBagConstraints;
 import javax.swing.JSplitPane;
 
 
-public class ColonyView extends JPanel {
+public class ColonyView< T extends RealType< T >>  extends JPanel {
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Create the panel.
 	 */
@@ -47,10 +55,18 @@ public class ColonyView extends JPanel {
 	public final BdvHandlePanel bdv;
 	public final BdvSource source;
 
-	public < T extends RealType< T >> ColonyView(RandomAccessibleInterval<T> img, OpService opService) {
+	public ColonyView(RandomAccessibleInterval<T> img, OpService opService) {
 
 		bdv= new BdvHandlePanel( null, Bdv.options().is2D() );
 		source = BdvFunctions.show( img , "img", Bdv.options().addTo( bdv ).axisOrder(AxisOrder.XYC));
+		
+		BigDataViewerUI bdvUI = createBDV(opService.context());
+		bdvUI.switch2D(true);
+		bdvUI.addImage(Views.hyperSlice(img, 2, 0), "R", Color.RED);
+		bdvUI.addImage(Views.hyperSlice(img, 2, 1), "G", Color.GREEN);
+		bdvUI.addImage(Views.hyperSlice(img, 2, 2), "B", Color.BLUE);
+		
+		
 		
 		
 		
@@ -74,9 +90,21 @@ public class ColonyView extends JPanel {
 		panel_1.setLayout(new BorderLayout());
 		panel_1.add(bdv.getViewerPanel(),BorderLayout.CENTER);
 
+		bdvUI.addCard(new JLabel("new card"), false, panel_1);
 
 
 
+	}
+	
+	private BigDataViewerUI createBDV(Context ctx) {
+		final JFrame frame = new JFrame("Blob Detection");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		final BigDataViewerUI bdvUI = new BigDataViewerUI<>(frame, ctx,
+				BdvOptions.options().preferredSize(800, 800));
+		frame.add(bdvUI.getPanel());
+		frame.pack();
+		frame.setVisible(true);
+		return bdvUI;
 	}
 
 }
