@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 
 import org.scijava.Context;
 
@@ -37,8 +38,10 @@ import java.awt.Button;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.JSplitPane;
 
@@ -57,6 +60,8 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	public final BdvHandlePanel bdv;
 	public final BdvSource source;
 	public BigDataViewerUI bdvUI;
+	public MaskPanel maskPanel;
+	public ColonyController controller;
 
 	public ColonyView(ColonyModel model, OpService opService) {
 		
@@ -70,32 +75,63 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		bdvUI.addImage(Views.hyperSlice(model.img, 2, 0), "R", Color.RED);
 		bdvUI.addImage(Views.hyperSlice(model.img, 2, 1), "G", Color.GREEN);
 		bdvUI.addImage(Views.hyperSlice(model.img, 2, 2), "B", Color.BLUE);
-		
-		
-		final BdvOverlay overlay = new BdvOverlay()
-		{
-			@Override
-			protected void draw( final Graphics2D g )
-			{
-
-				g.setColor( Color.RED );
-
-					g.drawOval(100, 10, 20, 20);
-			}
-		};
 
 		
-		bdvUI.addOverlay(overlay, "test overlay");
+		maskPanel=new MaskPanel();
+		bdvUI.addCard(new JLabel("Create Mask"),false,maskPanel);
+		
+		
+//		final overlayMask overlay = new OverlayMask(model.maskCircles);
+		
+		
+//		bdvUI.addOverlay(overlay, "test overlay");
 		
 
 
 	}
+	public void setController(ColonyController controller) {
+		this.controller=controller;
+	}
+	
+	
+	
+	private class MaskPanel extends JPanel{
+		
+		JButton loadDataForMaskBtn;
+		JToggleButton drawMaskTBtn;
+		JButton saveMaskBtn;
+		JButton loadMaskBtn;
+		
+		public MaskPanel()
+		{
+			
+	
+			setLayout(new GridLayout(2,2,2,2));
+			Dimension d=this.getSize();
+			
+			loadDataForMaskBtn=new JButton("Load data for mask");
+			add(loadDataForMaskBtn);
+			
+			drawMaskTBtn=new JToggleButton("Draw mask");
+			add(drawMaskTBtn);
+			
+			saveMaskBtn=new JButton("Save mask");
+			add(saveMaskBtn);
+			
+			loadMaskBtn=new JButton("Load mask");
+			add(loadMaskBtn);
+			
+			
+			
+			
+		}
+	}
+	
 	
 	private BigDataViewerUI createBDV(Context ctx) {
 		final JFrame frame = new JFrame("Blob Detection");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		final BigDataViewerUI bdvUI = new BigDataViewerUI<>(frame, ctx,
-				BdvOptions.options().preferredSize(800, 800));
+		final BigDataViewerUI bdvUI = new BigDataViewerUI<>(frame, ctx,BdvOptions.options().preferredSize(800, 800));
 		frame.add(bdvUI.getPanel());
 		frame.pack();
 		frame.setVisible(true);

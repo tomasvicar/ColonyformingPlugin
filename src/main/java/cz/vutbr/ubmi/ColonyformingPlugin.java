@@ -75,17 +75,17 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 
 	ColonyView view;
 	ColonyModel model;
+	ColonyController controller;
 
 	@Override
 	public void run() {
 		
-//		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) toDoubleType(currentData.getImgPlus());
-
-		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) currentData.getImgPlus();
 		
+		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) currentData.getImgPlus();
 		
 		this.model= new ColonyModel(img);
 		this.view = new ColonyView(model,opService);
+		this.controller = new ColonyController(model,view);
 
 	}
 
@@ -104,14 +104,6 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 		IJ.openImage( "res/test.tif" ).show();
 		ij.command().run(ColonyformingPlugin.class, true);
 
-	}
-
-
-
-	public static RandomAccessibleInterval< DoubleType > toDoubleType( final RandomAccessibleInterval< ? extends RealType< ? > > image ) {
-		if ( Util.getTypeFromInterval( image ) instanceof DoubleType )
-			return ( RandomAccessibleInterval< DoubleType > ) image;
-		return Converters.convert( image, ( i, o ) -> o.setReal( i.getRealDouble() ), new DoubleType() );
 	}
 
 
