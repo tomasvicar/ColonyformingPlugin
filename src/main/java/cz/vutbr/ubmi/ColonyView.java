@@ -60,6 +60,7 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 
 	public ColonyView(ColonyModel model, OpService opService) {
 		
+		model.setView(this);
 		
 		bdv= new BdvHandlePanel( null, Bdv.options().is2D() );
 		source = BdvFunctions.show(model.img , "img", Bdv.options().addTo( bdv ).axisOrder(AxisOrder.XYC));
@@ -69,24 +70,6 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		bdvUI.addImage(Views.hyperSlice(model.img, 2, 0), "R", Color.RED);
 		bdvUI.addImage(Views.hyperSlice(model.img, 2, 1), "G", Color.GREEN);
 		bdvUI.addImage(Views.hyperSlice(model.img, 2, 2), "B", Color.BLUE);
-		
-		
-		setLayout(new BorderLayout(0, 0));
-
-		JPanel panel = new JPanel();
-		add(panel, BorderLayout.EAST);
-
-		JButton btnNewButton = new JButton("New button");
-		panel.add(btnNewButton);
-
-		JPanel panel_1 = new JPanel();
-		add(panel_1, BorderLayout.CENTER);;
-
-		panel_1.setLayout(new BorderLayout());
-		panel_1.add(bdv.getViewerPanel(),BorderLayout.CENTER);
-
-		
-		
 		
 		
 		final BdvOverlay overlay = new BdvOverlay()
@@ -101,8 +84,9 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 			}
 		};
 
-		BdvFunctions.showOverlay( overlay, "overlay", Bdv.options().addTo( bdv ) );
-
+		
+		bdvUI.addOverlay(overlay, "test overlay");
+		
 
 
 	}

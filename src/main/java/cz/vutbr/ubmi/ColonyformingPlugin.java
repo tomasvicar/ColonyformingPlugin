@@ -79,25 +79,13 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 	@Override
 	public void run() {
 		
-		
-		
 //		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) toDoubleType(currentData.getImgPlus());
-		
-		
+
 		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) currentData.getImgPlus();
 		
 		
 		this.model= new ColonyModel(img);
 		this.view = new ColonyView(model,opService);
-		
-		final JFrame frame = new JFrame( "my test frame" );
-		frame.setLayout(new BorderLayout());
-		frame.add( view, BorderLayout.CENTER );
-		frame.pack();
-		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
-		frame.setBounds(100, 100, 800, 600);
-		frame.setVisible( true );
-
 
 	}
 
