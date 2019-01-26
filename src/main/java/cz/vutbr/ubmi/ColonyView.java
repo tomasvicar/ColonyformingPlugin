@@ -16,6 +16,7 @@ import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandlePanel;
 import bdv.util.BdvOptions;
+import bdv.util.BdvOverlay;
 import bdv.util.BdvSource;
 import net.imagej.ops.OpService;
 import net.imglib2.Cursor;
@@ -36,6 +37,7 @@ import java.awt.Button;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.JSplitPane;
@@ -54,6 +56,7 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 
 	public final BdvHandlePanel bdv;
 	public final BdvSource source;
+	public BigDataViewerUI bdvUI;
 
 	public ColonyView(RandomAccessibleInterval<T> img, OpService opService) {
 
@@ -67,7 +70,7 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		bdvUI.addImage(Views.hyperSlice(img, 2, 2), "B", Color.BLUE);
 		
 		
-		
+
 		
 		
 		
@@ -75,7 +78,7 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 //		source.setDisplayRangeBounds( 0, minMax.getB().getRealDouble());
 //		source.setDisplayRange( minMax.getA().getRealDouble(),minMax.getB().getRealDouble());
 
-
+//
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
@@ -90,7 +93,23 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		panel_1.setLayout(new BorderLayout());
 		panel_1.add(bdv.getViewerPanel(),BorderLayout.CENTER);
 
-		bdvUI.addCard(new JLabel("new card"), false, panel_1);
+		
+		
+		
+		
+		final BdvOverlay overlay = new BdvOverlay()
+		{
+			@Override
+			protected void draw( final Graphics2D g )
+			{
+
+				g.setColor( Color.RED );
+
+					g.drawOval(100, 10, 20, 20);
+			}
+		};
+
+		BdvFunctions.showOverlay( overlay, "overlay", Bdv.options().addTo( bdv ) );
 
 
 
