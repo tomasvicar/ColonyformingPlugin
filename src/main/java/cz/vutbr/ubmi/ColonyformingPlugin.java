@@ -74,6 +74,7 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 	JFrame  frame;
 
 	ColonyView view;
+	ColonyModel model;
 
 	@Override
 	public void run() {
@@ -85,7 +86,9 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 		
 		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) currentData.getImgPlus();
 		
-		view = new ColonyView(img,opService);
+		
+		this.model= new ColonyModel(img);
+		this.view = new ColonyView(model,opService);
 		
 		final JFrame frame = new JFrame( "my test frame" );
 		frame.setLayout(new BorderLayout());

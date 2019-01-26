@@ -58,27 +58,19 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	public final BdvSource source;
 	public BigDataViewerUI bdvUI;
 
-	public ColonyView(RandomAccessibleInterval<T> img, OpService opService) {
-
+	public ColonyView(ColonyModel model, OpService opService) {
+		
+		
 		bdv= new BdvHandlePanel( null, Bdv.options().is2D() );
-		source = BdvFunctions.show( img , "img", Bdv.options().addTo( bdv ).axisOrder(AxisOrder.XYC));
+		source = BdvFunctions.show(model.img , "img", Bdv.options().addTo( bdv ).axisOrder(AxisOrder.XYC));
 		
 		BigDataViewerUI bdvUI = createBDV(opService.context());
 		bdvUI.switch2D(true);
-		bdvUI.addImage(Views.hyperSlice(img, 2, 0), "R", Color.RED);
-		bdvUI.addImage(Views.hyperSlice(img, 2, 1), "G", Color.GREEN);
-		bdvUI.addImage(Views.hyperSlice(img, 2, 2), "B", Color.BLUE);
+		bdvUI.addImage(Views.hyperSlice(model.img, 2, 0), "R", Color.RED);
+		bdvUI.addImage(Views.hyperSlice(model.img, 2, 1), "G", Color.GREEN);
+		bdvUI.addImage(Views.hyperSlice(model.img, 2, 2), "B", Color.BLUE);
 		
 		
-
-		
-		
-		
-//		Pair<T,T> minMax=opService.stats().minMax(Views.iterable(img));
-//		source.setDisplayRangeBounds( 0, minMax.getB().getRealDouble());
-//		source.setDisplayRange( minMax.getA().getRealDouble(),minMax.getB().getRealDouble());
-
-//
 		setLayout(new BorderLayout(0, 0));
 
 		JPanel panel = new JPanel();
@@ -124,6 +116,12 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		frame.pack();
 		frame.setVisible(true);
 		return bdvUI;
+	}
+	
+	
+	
+	public BigDataViewerUI getBigDataViewerUI() {
+		return this.bdvUI;
 	}
 
 }
