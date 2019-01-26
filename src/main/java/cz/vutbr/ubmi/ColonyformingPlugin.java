@@ -12,9 +12,15 @@ import net.imagej.Dataset;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.converter.Converters;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.util.Util;
+import net.miginfocom.swing.MigLayout;
 
+import org.scijava.Context;
+import org.scijava.ItemVisibility;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -22,8 +28,19 @@ import org.scijava.ui.UIService;
 
 import ij.IJ;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 
 
@@ -43,63 +60,72 @@ import java.util.List;
 public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 
 
-    @Parameter
-    private Dataset currentData;
+	@Parameter
+	private Dataset currentData;
+	
 
-    @Parameter
-    private UIService uiService;
+	@Parameter
+	private UIService uiService;
 
-    @Parameter
-    private OpService opService;
+	@Parameter
+	public OpService opService;
 
-    @Override
-    public void run() {
-        final Img<T> image = (Img<T>)currentData.getImgPlus();
 
-        
-        final double[] sigmas = {1.0};
+	@Parameter
+	Context context;
 
-        List<RandomAccessibleInterval<T>> results = new ArrayList<>();
+	
+	JFrame  frame;
 
-        for (double sigma : sigmas) {
-            results.add(opService.filter().gauss(image, sigma));
-        }
+	ColonyView view;
 
-        
-        for (RandomAccessibleInterval<T> elem : results) {
-            uiService.show(elem);
-        }
-    }
+	@Override
+	public void run() {
+		
+		
+		
+//		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) toDoubleType(currentData.getImgPlus());
+		
+		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) currentData.getImgPlus();
+		
+		view = new ColonyView(img,context,opService);
+		
+		final JFrame frame = new JFrame( "my test frame" );
+		frame.setLayout(new BorderLayout());
+		frame.add( view, BorderLayout.CENTER );
+		frame.pack();
+		frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
+		frame.setBounds(100, 100, 800, 600);
+		frame.setVisible( true );
 
-    /**
-     * This main function serves for development purposes.
-     * It allows you to run the plugin immediately out of
-     * your integrated development environment (IDE).
-     *
-     * @param args whatever, it's ignored
-     * @throws Exception
-     */
-    public static void main(final String... args) throws Exception {
-        
-        final ImageJ ij = new ImageJ();
-        ij.ui().showUI();
-        IJ.openImage( "res/test.tif" ).show();
-//        final Dataset dataset = ij.scifio().datasetIO().open("res/test.tif");
-        ij.command().run(ColonyformingPlugin.class, true);
-        
-//        final Dataset dataset = ij.scifio().datasetIO().open("res/test.tif");
-//        ij.ui().show(dataset);
-//        ij.command().run(ColonyformingPlugin.class, true);
-        
-//        final File file = ij.ui().chooseFile(null, "open");
-//        if (file != null) {
-//            final Dataset dataset = ij.scifio().datasetIO().open(file.getPath());
-//            ij.ui().show(dataset);
-//            ij.command().run(ColonyformingPlugin.class, true);
-//        }
-        
-        
-        
-    }
+
+	}
+
+	/**
+	 * This main function serves for development purposes.
+	 * It allows you to run the plugin immediately out of
+	 * your integrated development environment (IDE).
+	 *
+	 * @param args whatever, it's ignored
+	 * @throws Exception
+	 */
+	public static void main(final String... args) throws Exception {
+
+		final ImageJ ij = new ImageJ();
+		ij.ui().showUI();
+		IJ.openImage( "res/test.tif" ).show();
+		ij.command().run(ColonyformingPlugin.class, true);
+
+	}
+
+
+
+	public static RandomAccessibleInterval< DoubleType > toDoubleType( final RandomAccessibleInterval< ? extends RealType< ? > > image ) {
+		if ( Util.getTypeFromInterval( image ) instanceof DoubleType )
+			return ( RandomAccessibleInterval< DoubleType > ) image;
+		return Converters.convert( image, ( i, o ) -> o.setReal( i.getRealDouble() ), new DoubleType() );
+	}
+
+
 
 }
