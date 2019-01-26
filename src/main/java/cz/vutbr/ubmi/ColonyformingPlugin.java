@@ -70,10 +70,6 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 	@Parameter
 	public OpService opService;
 
-
-	@Parameter
-	Context context;
-
 	
 	JFrame  frame;
 
@@ -86,9 +82,10 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 		
 //		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) toDoubleType(currentData.getImgPlus());
 		
+		
 		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) currentData.getImgPlus();
 		
-		view = new ColonyView(img,context,opService);
+		view = new ColonyView(img,opService);
 		
 		final JFrame frame = new JFrame( "my test frame" );
 		frame.setLayout(new BorderLayout());
