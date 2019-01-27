@@ -32,15 +32,22 @@ public class ColonyModel<T extends RealType>  {
 	
 	
 	public static class MaskCircle {
-		public double x,y,r;
+		public double x,y,r,t;
 		public MaskCircle(double x,double y,double r) {
 			this.x=x;
 			this.y=y;
 			this.r=r;
+			this.t=0;
+		}
+		public MaskCircle(double x,double y,double r,double t) {
+			this.x=x;
+			this.y=y;
+			this.r=r;
+			this.t=t;
 		}
 		
 		public MaskCircle copy() {
-			MaskCircle cc= new MaskCircle(this.x,this.y,this.r);
+			MaskCircle cc= new MaskCircle(this.x,this.y,this.r,this.t);
 			return cc;
 		}
 	}

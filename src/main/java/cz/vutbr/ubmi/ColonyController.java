@@ -288,38 +288,61 @@ public class ColonyController< T extends RealType< T >> {
 		int returnValue = jfc.showOpenDialog( null );
 		if ( returnValue == JFileChooser.APPROVE_OPTION ) {
 			File file = jfc.getSelectedFile();
-		
-	        String path = file.getAbsolutePath();
 
-//	        ImgOpener imgOpener = new ImgOpener();
-//	        RandomAccessibleInterval< T > img = ( RandomAccessibleInterval< T > ) IO.openImgs( path, new FloatType() ).get( 0 );
-	        
-//	        ArrayList<RandomAccessibleInterval< T >> imgL=new ArrayList<RandomAccessibleInterval< T >>();
-//	        RandomAccessibleInterval< T > img0 = ( RandomAccessibleInterval< T > ) IO.openImgs( path, new ArrayImgFactory<>( new FloatType() ) ).get( 0 );
-//	        RandomAccessibleInterval< T > img1 = ( RandomAccessibleInterval< T > ) IO.openImgs( path, new ArrayImgFactory<>( new FloatType() ) ).get( 1 );
-//	        RandomAccessibleInterval< T > img2 = ( RandomAccessibleInterval< T > ) IO.openImgs( path, new ArrayImgFactory<>( new FloatType() ) ).get( 2 );
-//	        imgL.add(img0);
-//	        imgL.add(img1);
-//	        imgL.add(img2);
-//	        RandomAccessibleInterval< T > img=Views.stack();
-//	        RandomAccessibleInterval< T > img = ( RandomAccessibleInterval< T > ) IO.openImgs( path, new ArrayImgFactory<>( new FloatType() ) ).get( 0 );
-	        
-//	        ImgOpener imgOpener = new ImgOpener();
-	        
-	        RandomAccessibleInterval< T > img = (RandomAccessibleInterval<T>) ImagePlusAdapter.wrap(new Opener().openImage(path));
-	        
-	        
-	        view.bdvUI.removeAll();
-	        model.img=img;
-	        view.bdvUI.addImage(Views.hyperSlice(model.img, 2, 0), "R", Color.RED);
-	        view.bdvUI.addImage(Views.hyperSlice(model.img, 2, 1), "G", Color.GREEN);
-	        view.bdvUI.addImage(Views.hyperSlice(model.img, 2, 2), "B", Color.BLUE);
-	        
+			String path = file.getAbsolutePath();
+
+
+			RandomAccessibleInterval< T > img = (RandomAccessibleInterval<T>) ImagePlusAdapter.wrap(new Opener().openImage(path));
+			model.img=img;
+			view.updateImage();
+
+
+		}
+
+
 	}
 
+
+	public void saveMaskBtnAction() {
+		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		jfc.setDialogTitle( "Save mask csv: " );
+		jfc.setAcceptAllFileFilterUsed(false);
+		FileNameExtensionFilter filter = new FileNameExtensionFilter( "*.csv", "csv" );
+		jfc.setFileFilter( filter );
+		jfc.addChoosableFileFilter(filter);
+		int returnValue = jfc.showSaveDialog( null );
+		if ( returnValue == JFileChooser.APPROVE_OPTION ) {
+			File file = jfc.getSelectedFile();
+
+			String fileName = file.getAbsolutePath();
+
+			if (!(fileName.substring(fileName.length()-4).equals(".csv")))
+				fileName=fileName.concat(".csv");
+			
+			CSVMaskReaderWriter.writeCsv(fileName, model.maskCircles);
+		}
 		
-		view.updateOverlayMask();
+	}
+
+
+	public void loadMaskBtnAction() {
 		
+		
+		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		jfc.setDialogTitle( "Load mask csv: " );
+		jfc.setAcceptAllFileFilterUsed(false);
+		FileNameExtensionFilter filter = new FileNameExtensionFilter( "*.csv", "csv" );
+		jfc.setFileFilter( filter );
+		jfc.addChoosableFileFilter(filter);
+		int returnValue = jfc.showOpenDialog( null );
+		if ( returnValue == JFileChooser.APPROVE_OPTION ) {
+			File file = jfc.getSelectedFile();
+
+			String fileName = file.getAbsolutePath();
+			
+			model.maskCircles=CSVMaskReaderWriter.loadCsv(fileName);
+			view.updateOverlayMask();
+		}
 		
 	}
 	

@@ -63,19 +63,19 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	public MaskPanel maskPanel;
 	public ColonyController controller;
 	public OverlayMask overlayMask ;
+	public ColonyModel model;
 	private EventHandler eventHandler;
 
 	public ColonyView(ColonyModel model, OpService opService) {
 		
+		this.model=model;
 		model.setView(this);
 		
 		eventHandler=new EventHandler();
 		
 		bdvUI = createBDV(opService.context());
 		bdvUI.switch2D(true);
-		bdvUI.addImage(Views.hyperSlice(model.img, 2, 0), "R", Color.RED);
-		bdvUI.addImage(Views.hyperSlice(model.img, 2, 1), "G", Color.GREEN);
-		bdvUI.addImage(Views.hyperSlice(model.img, 2, 2), "B", Color.BLUE);
+		updateImage();
 
 		
 		maskPanel=new MaskPanel();
@@ -89,7 +89,15 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 
 	}
 	
-//	public updateImage()
+	public void updateImage() {
+		bdvUI.removeAll();
+        bdvUI.addImage(Views.hyperSlice(model.img, 2, 0), "R", Color.RED);
+        bdvUI.addImage(Views.hyperSlice(model.img, 2, 1), "G", Color.GREEN);
+        bdvUI.addImage(Views.hyperSlice(model.img, 2, 2), "B", Color.BLUE);
+		
+	}
+	
+	
 	
 	
 	
@@ -162,7 +170,16 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 			if(e.getSource()==maskPanel.loadDataForMaskBtn){
 				controller.loadDataForMaskBtnAction();
 			}
+			if(e.getSource()==maskPanel.saveMaskBtn){
+				controller.saveMaskBtnAction();
+			}
+			if(e.getSource()==maskPanel.loadMaskBtn){
+				controller.loadMaskBtnAction();
+			}
+			
 		}
+		
+
 		
 	}
 
