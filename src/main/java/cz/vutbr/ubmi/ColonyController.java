@@ -17,7 +17,7 @@ import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
 import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
 
-import bdv.util.BdvHandlePanel;
+
 import cz.vutbr.ubmi.ColonyModel.MaskCircle;
 import ij.io.Opener;
 import io.scif.img.IO;
@@ -52,7 +52,7 @@ public class ColonyController< T extends RealType< T >> {
 		
 	
 		
-		behaviours.install( view.bdvUI.getBDVHandlePanel().getTriggerbindings(), "my-new-behaviours" );
+		behaviours.install( view.bdv.getTriggerbindings(), "my-new-behaviours" );
 		
 		
 		behaviours.behaviour( new DragCircle(), "left drag", "button1" );
@@ -73,7 +73,7 @@ public class ColonyController< T extends RealType< T >> {
 		private MaskCircle nearestC;
 		@Override
 		public void click(int x, int y) {
-			view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+			view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 			double xx=pos.getDoublePosition(0);
 			double yy=pos.getDoublePosition(1);
 			
@@ -100,7 +100,7 @@ public class ColonyController< T extends RealType< T >> {
 		private MaskCircle nearestC;
 		@Override
 		public void click(int x, int y) {
-			view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+			view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 			double xx=pos.getDoublePosition(0);
 			double yy=pos.getDoublePosition(1);
 			
@@ -120,7 +120,7 @@ public class ColonyController< T extends RealType< T >> {
 		private MaskCircle nearestC;
 		@Override
 		public void click(int x, int y) {
-			view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+			view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 			double xx=pos.getDoublePosition(0);
 			double yy=pos.getDoublePosition(1);
 			
@@ -140,7 +140,7 @@ public class ColonyController< T extends RealType< T >> {
 		private MaskCircle nearestC;
 		@Override
 		public void click(int x, int y) {
-			view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+			view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 			double xx=pos.getDoublePosition(0);
 			double yy=pos.getDoublePosition(1);
 			
@@ -163,7 +163,7 @@ public class ColonyController< T extends RealType< T >> {
 		public void init(int x, int y) {
 			if (view.maskPanel.drawMaskTBtn.isSelected()) {
 
-				view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+				view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 				double xx=pos.getDoublePosition(0);
 				double yy=pos.getDoublePosition(1);
 				
@@ -177,7 +177,7 @@ public class ColonyController< T extends RealType< T >> {
 		@Override
 		public void drag(int x, int y) {
 			if (view.maskPanel.drawMaskTBtn.isSelected()) {
-				view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+				view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 				double xx=pos.getDoublePosition(0);
 				double yy=pos.getDoublePosition(1);
 				
@@ -194,7 +194,7 @@ public class ColonyController< T extends RealType< T >> {
 		@Override
 		public void end(int x, int y) {
 			if (view.maskPanel.drawMaskTBtn.isSelected()) {
-				view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+				view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 				double xx=pos.getDoublePosition(0);
 				double yy=pos.getDoublePosition(1);
 				
@@ -229,7 +229,7 @@ public class ColonyController< T extends RealType< T >> {
 		@Override
 		public void init(int x, int y) {
 			if (view.maskPanel.drawMaskTBtn.isSelected()) {
-				view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+				view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 				double xx=pos.getDoublePosition(0);
 				double yy=pos.getDoublePosition(1);
 				
@@ -250,7 +250,7 @@ public class ColonyController< T extends RealType< T >> {
 		@Override
 		public void drag(int x, int y) {
 			if (view.maskPanel.drawMaskTBtn.isSelected()) {
-				view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+				view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 				double xx=pos.getDoublePosition(0);
 				double yy=pos.getDoublePosition(1);
 				
@@ -265,7 +265,7 @@ public class ColonyController< T extends RealType< T >> {
 		public void end(int x, int y) {
 			if (view.maskPanel.drawMaskTBtn.isSelected()) {
 			
-				view.bdvUI.getBDVHandlePanel().getViewerPanel().displayToGlobalCoordinates( x, y, pos );
+				view.bdv.getViewerPanel().displayToGlobalCoordinates( x, y, pos );
 				double xx=pos.getDoublePosition(0);
 				double yy=pos.getDoublePosition(1);
 				
@@ -342,6 +342,49 @@ public class ColonyController< T extends RealType< T >> {
 			
 			model.maskCircles=CSVMaskReaderWriter.loadCsv(fileName);
 			view.updateOverlayMask();
+		}
+		
+	}
+
+
+	public void selectAddDataBtnAction() {
+		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+		jfc.setDialogTitle( "Load aditional data (without mask template) to process: " );
+		jfc.setAcceptAllFileFilterUsed(false);
+		FileNameExtensionFilter filter = new FileNameExtensionFilter( "*.tif", "tif" );
+		jfc.setFileFilter( filter );
+		jfc.addChoosableFileFilter(filter);
+		jfc.setMultiSelectionEnabled(true);
+		int returnValue = jfc.showOpenDialog( null );
+		if ( returnValue == JFileChooser.APPROVE_OPTION ) {
+			
+			ArrayList<RandomAccessibleInterval< T >> imgList=new ArrayList<RandomAccessibleInterval< T >>();
+			
+			imgList.add(model.img);
+			
+			File[] files = jfc.getSelectedFiles();
+			for (File file : files) {
+				String path = file.getAbsolutePath();
+				RandomAccessibleInterval< T > img = (RandomAccessibleInterval<T>) ImagePlusAdapter.wrap(new Opener().openImage(path));
+				imgList.add(img);
+			}
+			RandomAccessibleInterval< T > imgStack=Views.stack(imgList);
+
+
+			model.img=imgStack;
+			
+			
+//			BdvHandlePanel bdv = new BdvHandlePanel( null, Bdv.options().is2D() );
+//			bdv.a
+			
+			
+//			BdvFunctions.show( imgStack, "img",Bdv.options().is2D().axisOrder(AxisOrder.XYCT));
+			
+			
+			
+			view.updateImage();
+
+
 		}
 		
 	}

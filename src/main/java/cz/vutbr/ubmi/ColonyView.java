@@ -11,7 +11,7 @@ import org.scijava.Context;
 
 import com.indago.util.ImglibUtil;
 
-import bdv.ui.panel.BigDataViewerUI;
+
 import bdv.util.AxisOrder;
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
@@ -31,6 +31,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.Util;
 import net.imglib2.view.Views;
+import net.miginfocom.swing.MigLayout;
 
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
@@ -59,12 +60,14 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	 * Create the panel.
 	 */
 
-	public BigDataViewerUI bdvUI;
+//	public BigDataViewerUI bdvUI;
 	public MaskPanel maskPanel;
 	public ColonyController controller;
 	public OverlayMask overlayMask ;
 	public ColonyModel model;
 	private EventHandler eventHandler;
+	public AlignPanel alignPanel;
+	public BdvHandlePanel bdv;
 
 	public ColonyView(ColonyModel model, OpService opService) {
 		
@@ -73,13 +76,35 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		
 		eventHandler=new EventHandler();
 		
-		bdvUI = createBDV(opService.context());
-		bdvUI.switch2D(true);
+		
+		
+		
+		
+//		bdvUI = createBDV(opService.context());
+        JFrame frame = new JFrame("BDV-UI");
+        frame.setBounds(50, 50, 1200, 900);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+        frame.setMinimumSize(new Dimension(1200, 800));
+        frame.setLayout(new MigLayout("fillx, filly, ins 0", "[grow]", "[grow]"));
+
+        bdv = new BdvHandlePanel( frame, Bdv.options() );
+        frame.pack();
+        
+        
+		
+		
+		
+//		bdvUI.switch2D(true);
 		updateImage();
 
 		
 		maskPanel=new MaskPanel();
-		bdvUI.addCard(new JLabel("Create Mask"),false,maskPanel);
+		bdv.addNewCard("Create Mask",false,maskPanel);
+		
+		alignPanel=new AlignPanel();
+		bdv.addNewCard("Align Images",false,alignPanel);
+		
 		
 		overlayMask = new OverlayMask(model);
 		
@@ -90,11 +115,18 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	}
 	
 	public void updateImage() {
-		bdvUI.removeAll();
-        bdvUI.addImage(Views.hyperSlice(model.img, 2, 0), "R", Color.RED);
-        bdvUI.addImage(Views.hyperSlice(model.img, 2, 1), "G", Color.GREEN);
-        bdvUI.addImage(Views.hyperSlice(model.img, 2, 2), "B", Color.BLUE);
-		
+//		bdvUI.removeAll();
+//        bdvUI.addImage(Views.hyperSlice(model.img, 2, 0), "R", Color.RED);
+//        bdvUI.addImage(Views.hyperSlice(model.img, 2, 1), "G", Color.GREEN);
+//        bdvUI.addImage(Views.hyperSlice(model.img, 2, 2), "B", Color.BLUE);
+//        
+//        
+
+        BdvFunctions.show(model.img,"fdsfd",Bdv.options().addTo(bdv).axisOrder(AxisOrder.XYCT));
+        
+        
+        
+        
 	}
 	
 	
@@ -106,8 +138,10 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	}
 	
 	public void updateOverlayMask(){
-		bdvUI.addOverlay(overlayMask, "test overlay");
+		BdvFunctions.showOverlay(overlayMask, "test overlay", Bdv.options().addTo(bdv));
 	}
+	
+	
 	
 	
 	
@@ -142,24 +176,54 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		}
 	}
 	
-	 
-	private BigDataViewerUI createBDV(Context ctx) {
-		final JFrame frame = new JFrame("Blob Detection");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		final BigDataViewerUI bdvUI = new BigDataViewerUI<>(frame, ctx,BdvOptions.options().preferredSize(800, 800));
-		frame.add(bdvUI.getPanel());
-		frame.pack();
-		frame.setVisible(true);
-		return bdvUI;
+	
+	
+	class AlignPanel extends JPanel{
 		
+		JButton selectAddDataBtn;
+		JButton alignBtn;
+		JButton divideBtn;
+		
+		public AlignPanel()
+		{
+
+			setLayout(new GridLayout(3,1,2,2));
+			Dimension d=this.getSize();
+			
+			selectAddDataBtn=new JButton("Select additional data");
+			add(selectAddDataBtn);
+			selectAddDataBtn.addActionListener(eventHandler);
+			
+			alignBtn=new JButton("Align");
+			add(alignBtn);
+			alignBtn.addActionListener(eventHandler);
+			
+			divideBtn=new JButton("Divide");
+			add(divideBtn);
+			divideBtn.addActionListener(eventHandler);
+			
+		}
 	}
+	
+	
+	 
+//	private BigDataViewerUI createBDV(Context ctx) {
+//		final JFrame frame = new JFrame("Blob Detection");
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		final BigDataViewerUI bdvUI = new BigDataViewerUI<>(frame, ctx,BdvOptions.options().preferredSize(800, 800));
+//		frame.add(bdvUI.getPanel());
+//		frame.pack();
+//		frame.setVisible(true);
+//		return bdvUI;
+//		
+//	}
 	
 	
 
 	
-	public BigDataViewerUI getBigDataViewerUI() {
-		return this.bdvUI;
-	}
+//	public BigDataViewerUI getBigDataViewerUI() {
+//		return this.bdvUI;
+//	}
 	
 	
 	public class EventHandler implements ActionListener{
@@ -176,6 +240,14 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 			if(e.getSource()==maskPanel.loadMaskBtn){
 				controller.loadMaskBtnAction();
 			}
+			
+			
+			
+			if(e.getSource()==alignPanel.selectAddDataBtn){
+				controller.selectAddDataBtnAction();
+			}
+			
+			
 			
 		}
 		

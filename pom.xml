@@ -100,6 +100,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>bigdataviewer-vistools</artifactId>
+			<version>1.0.0-beta-13-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>sc.fiji</groupId>
@@ -113,10 +114,6 @@
 		<dependency>
 			<groupId>net.imagej</groupId>
 			<artifactId>imagej-ops</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>sc.fiji</groupId>
-			<artifactId>bigdataviewer-ui-panel</artifactId>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
