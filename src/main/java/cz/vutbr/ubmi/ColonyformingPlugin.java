@@ -86,6 +86,7 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 		this.model= new ColonyModel(img);
 		this.view = new ColonyView(model,opService);
 		this.controller = new ColonyController(model,view);
+		
 
 	}
 
