@@ -14,6 +14,7 @@ import bdv.util.BdvFunctions;
 import bdv.util.BdvHandlePanel;
 import bdv.util.BdvOverlay;
 import bdv.util.BdvStackSource;
+import bdv.util.BdvUIPanel;
 import net.imagej.ops.OpService;
 import net.imglib2.Cursor;
 import net.imglib2.FinalDimensions;
@@ -51,7 +52,7 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	public ColonyModel< T > model;
 	private EventHandler eventHandler;
 	public AlignPanel alignPanel;
-	public BdvHandlePanel bdv;
+	public BdvUIPanel bdv;
 	public OpService opService;
 	public BdvStackSource<ARGBType> source ;
 	
@@ -75,9 +76,8 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         frame.setMinimumSize(new Dimension(1200, 800));
-        frame.setLayout(new MigLayout("fillx, filly, ins 0", "[grow]", "[grow]"));
 
-        bdv = new BdvHandlePanel( frame, Bdv.options().is2D() );
+        bdv = new BdvUIPanel( frame, Bdv.options().is2D() );
         frame.pack();
         
         
@@ -93,7 +93,6 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		
 		alignPanel=new AlignPanel();
 		bdv.addNewCard("Align Images",false,alignPanel);
-		
 		
 		overlayMask = new OverlayMask(model);
 		
@@ -154,8 +153,9 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
         	rgbC.get().set(new ARGBType(ARGBType.rgba(r/255f, g/255f, b/255f, 1)));
         }
         
-        if (source!= null)
+        if (source!= null) {
         	source.removeFromBdv();
+        }
         
         source = BdvFunctions.show(rgbImg,"fdsfd",Bdv.options().addTo(bdv).axisOrder(AxisOrder.XYT));
         
@@ -172,7 +172,7 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	}
 	
 	public void updateOverlayMask(){
-		BdvFunctions.showOverlay(overlay, "test overlay", Bdv.options().addTo(bdv));
+		BdvFunctions.showOverlay(overlayMask, "test overlay", Bdv.options().addTo(bdv));
 	}
 	
 	

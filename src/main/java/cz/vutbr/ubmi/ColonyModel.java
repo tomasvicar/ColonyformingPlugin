@@ -1,26 +1,24 @@
 package cz.vutbr.ubmi;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import net.imagej.ops.OpService;
-import net.imglib2.RandomAccessible;
+
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.gauss3.Gauss3;
-import net.imglib2.img.array.ArrayImgFactory;
+
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
-public class ColonyModel<T extends RealType>  {
+public class ColonyModel<T extends RealType<T>>  {
 	
 	public RandomAccessibleInterval<T> img;
-	public ColonyView view;
+	public RandomAccessibleInterval<T> grayimg;
+	public ColonyView<T> view;
 	public ArrayList<MaskCircle> maskCircles = new ArrayList<MaskCircle>();
-	public ColonyController controller;
+	public ColonyController<T> controller;
 	public OpService opService;
 	
 	public ColonyModel(RandomAccessibleInterval<T> img, OpService opService) {
@@ -34,11 +32,11 @@ public class ColonyModel<T extends RealType>  {
 		
 	}
 	
-	public void setView(ColonyView view) {
+	public void setView(ColonyView<T> view) {
 		this.view=view;
 	}
 	
-	public void setController(ColonyController controller) {
+	public void setController(ColonyController<T> controller) {
 		this.controller=controller;
 	}
 	

@@ -20,12 +20,18 @@ import cz.vutbr.ubmi.ColonyModel.MaskCircle;
 import ij.io.Opener;
 
 import net.imagej.ops.OpService;
+import net.imglib2.Cursor;
+import net.imglib2.FinalDimensions;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
 import net.imglib2.img.ImagePlusAdapter;
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
-
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 public class ColonyController< T extends RealType< T >> {
@@ -373,8 +379,25 @@ public class ColonyController< T extends RealType< T >> {
 
 			model.img=imgStack;
 			
+
+	        ArrayImgFactory<FloatType> fac = new ArrayImgFactory<>(new FloatType());
+	        Img<FloatType> grayImg = fac.create(new FinalDimensions(model.img.dimension(0), model.img.dimension(1),model.img.dimension(3)));
 			
 			
+			Cursor<T> cr = Views.hyperSlice(imgStack, 2, 0).cursor();
+			Cursor<T> cg = Views.hyperSlice(imgStack, 2, 1).cursor();
+			Cursor<T> cb = Views.hyperSlice(imgStack, 2, 2).cursor();
+			Cursor<FloatType> cgray = Views.iterable(grayImg).cursor();
+			while ( cr.hasNext()) {
+				cr.fwd();
+				cg.fwd();
+				cb.fwd();
+				cgray.fwd();
+				
+				cgray.get().set(new FloatType(0.299f*cr.get().getRealFloat() + 0.587f*cg.get().getRealFloat() + 0.114f*cb.get().getRealFloat()));
+	        }
+			model.grayimg=(RandomAccessibleInterval<T>) grayImg;
+
 			view.updateImage();
 
 
@@ -385,6 +408,16 @@ public class ColonyController< T extends RealType< T >> {
 
 	public void alignBtnAction() {
 		
+//		
+//		RandomAccessibleInterval< T > slice0 =Views.hyperSlice(model.grayimg, 3, 0);
+//		for (int i=1; i<model.grayimg.dimension(3); i++) {
+//			RandomAccessibleInterval< T > slice =Views.hyperSlice(model.grayimg, 3, i);
+//			
+//					
+//			
+//			
+//		}
+			
 		
 	}
 	
