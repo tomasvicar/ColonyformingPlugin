@@ -83,9 +83,9 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 		
 		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) currentData.getImgPlus();
 		
-		this.model= new ColonyModel(img);
+		this.model= new ColonyModel(img,opService);
 		this.view = new ColonyView(model,opService);
-		this.controller = new ColonyController(model,view);
+		this.controller = new ColonyController(model,view,opService);
 		
 
 	}

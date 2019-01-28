@@ -6,9 +6,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
+import net.imagej.ops.OpService;
+import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.algorithm.gauss3.Gauss3;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
 
 public class ColonyModel<T extends RealType>  {
 	
@@ -16,9 +21,17 @@ public class ColonyModel<T extends RealType>  {
 	public ColonyView view;
 	public ArrayList<MaskCircle> maskCircles = new ArrayList<MaskCircle>();
 	public ColonyController controller;
+	public OpService opService;
 	
-	public ColonyModel(RandomAccessibleInterval<T> img) {
-		this.img=img;
+	public ColonyModel(RandomAccessibleInterval<T> img, OpService opService) {
+		this.opService=opService;
+		
+		ArrayList<RandomAccessibleInterval<T> > l = new ArrayList<RandomAccessibleInterval<T> >();
+		l.add(img);
+		l.add(img);
+		l.add(img);
+		this.img=Views.stack(l);
+		
 	}
 	
 	public void setView(ColonyView view) {

@@ -19,6 +19,7 @@ import bdv.util.BdvHandlePanel;
 import bdv.util.BdvOptions;
 import bdv.util.BdvOverlay;
 import bdv.util.BdvSource;
+import bdv.util.BdvStackSource;
 import net.imagej.ops.OpService;
 import net.imglib2.Cursor;
 import net.imglib2.FinalDimensions;
@@ -39,6 +40,7 @@ import net.miginfocom.swing.MigLayout;
 import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Canvas;
@@ -71,10 +73,13 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	private EventHandler eventHandler;
 	public AlignPanel alignPanel;
 	public BdvHandlePanel bdv;
+	public OpService opService;
+	public BdvStackSource<ARGBType> source ;
 
 	public ColonyView(ColonyModel model, OpService opService) {
 		
 		this.model=model;
+		this.opService=opService;
 		model.setView(this);
 		
 		eventHandler=new EventHandler();
@@ -117,25 +122,26 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 
 	}
 	
-	public void updateImage() {
-//		bdvUI.removeAll();
-//        bdvUI.addImage(Views.hyperSlice(model.img, 2, 0), "R", Color.RED);
-//        bdvUI.addImage(Views.hyperSlice(model.img, 2, 1), "G", Color.GREEN);
-//        bdvUI.addImage(Views.hyperSlice(model.img, 2, 2), "B", Color.BLUE);
-//        
-//        
+	public void updateImage() {     
 
+		
+		
+		
+		
+		
         ArrayImgFactory<ARGBType> fac = new ArrayImgFactory<>(new ARGBType());
-        Img<ARGBType> rgbImg = fac.create(new FinalDimensions(model.img.dimension(0), model.img.dimension(1)));
+        
+        Img<ARGBType> rgbImg = fac.create(new FinalDimensions(model.img.dimension(0), model.img.dimension(1),model.img.dimension(3)));
         
         RandomAccess<T> ra = model.img.randomAccess();
         Cursor<ARGBType> rgbC = Views.flatIterable(rgbImg).cursor();
         
-        int[] pos = new int[3];
+        int[] pos = new int[4];
         while (rgbC.hasNext()) {
         	rgbC.fwd();
         	pos[0] = rgbC.getIntPosition(0);
         	pos[1] = rgbC.getIntPosition(1);
+        	pos[3] = rgbC.getIntPosition(2);
         	pos[2] = 0;
         	ra.setPosition(pos);
         	float r = ra.get().getRealFloat();
@@ -145,12 +151,14 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
         	pos[2] = 2;
         	ra.setPosition(pos);
         	float b = ra.get().getRealFloat();
+        	
         	rgbC.get().set(new ARGBType(ARGBType.rgba(r/255f, g/255f, b/255f, 1)));
         }
-        BdvFunctions.show(rgbImg,"fdsfd",Bdv.options().addTo(bdv));
         
+        if (source!= null)
+        	source.removeFromBdv();
         
-        
+        source = BdvFunctions.show(rgbImg,"fdsfd",Bdv.options().addTo(bdv).axisOrder(AxisOrder.XYT));
         
         
 	}

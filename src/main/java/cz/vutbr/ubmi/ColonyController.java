@@ -23,6 +23,7 @@ import ij.io.Opener;
 import io.scif.img.IO;
 import io.scif.img.ImgOpener;
 import io.scif.img.SCIFIOImgPlus;
+import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
 import net.imglib2.img.ImagePlusAdapter;
@@ -37,10 +38,12 @@ public class ColonyController< T extends RealType< T >> {
 	
 	public ColonyModel model;
 	public ColonyView view;
+	public OpService opService;
 	
-	public ColonyController(ColonyModel model,ColonyView view) {
+	public ColonyController(ColonyModel model,ColonyView view, OpService opService) {
 		this.model=model;
 		this.view=view;
+		this.opService=opService;
 		model.setController(this);
 		view.setController(this);
 		initBehavior();
@@ -360,7 +363,7 @@ public class ColonyController< T extends RealType< T >> {
 			
 			ArrayList<RandomAccessibleInterval< T >> imgList=new ArrayList<RandomAccessibleInterval< T >>();
 			
-			imgList.add(model.img);
+			imgList.add(Views.hyperSlice(model.img, 3, 0));
 			
 			File[] files = jfc.getSelectedFiles();
 			for (File file : files) {
@@ -368,17 +371,13 @@ public class ColonyController< T extends RealType< T >> {
 				RandomAccessibleInterval< T > img = (RandomAccessibleInterval<T>) ImagePlusAdapter.wrap(new Opener().openImage(path));
 				imgList.add(img);
 			}
+			
+
+			
 			RandomAccessibleInterval< T > imgStack=Views.stack(imgList);
 
 
 			model.img=imgStack;
-			
-			
-//			BdvHandlePanel bdv = new BdvHandlePanel( null, Bdv.options().is2D() );
-//			bdv.a
-			
-			
-//			BdvFunctions.show( imgStack, "img",Bdv.options().is2D().axisOrder(AxisOrder.XYCT));
 			
 			
 			
