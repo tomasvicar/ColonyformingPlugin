@@ -3,56 +3,35 @@ package cz.vutbr.ubmi;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+
 import javax.swing.JToggleButton;
 
-import org.scijava.Context;
-
-import com.indago.util.ImglibUtil;
 
 
 import bdv.util.AxisOrder;
 import bdv.util.Bdv;
 import bdv.util.BdvFunctions;
 import bdv.util.BdvHandlePanel;
-import bdv.util.BdvOptions;
 import bdv.util.BdvOverlay;
-import bdv.util.BdvSource;
 import bdv.util.BdvStackSource;
 import net.imagej.ops.OpService;
 import net.imglib2.Cursor;
 import net.imglib2.FinalDimensions;
-import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
-import net.imglib2.util.Pair;
-import net.imglib2.util.Util;
 import net.imglib2.view.Views;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.awt.BorderLayout;
-import java.awt.Button;
-import java.awt.Canvas;
+
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.GridBagConstraints;
-import javax.swing.JSplitPane;
-
 
 public class ColonyView< T extends RealType< T >>  extends JPanel {
 
@@ -67,16 +46,18 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 
 //	public BigDataViewerUI bdvUI;
 	public MaskPanel maskPanel;
-	public ColonyController controller;
+	public ColonyController< T > controller;
 	public OverlayMask overlayMask ;
-	public ColonyModel model;
+	public ColonyModel< T > model;
 	private EventHandler eventHandler;
 	public AlignPanel alignPanel;
 	public BdvHandlePanel bdv;
 	public OpService opService;
 	public BdvStackSource<ARGBType> source ;
+	
+	public BdvOverlay overlay;
 
-	public ColonyView(ColonyModel model, OpService opService) {
+	public ColonyView(ColonyModel< T > model, OpService opService) {
 		
 		this.model=model;
 		this.opService=opService;
@@ -96,7 +77,7 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
         frame.setMinimumSize(new Dimension(1200, 800));
         frame.setLayout(new MigLayout("fillx, filly, ins 0", "[grow]", "[grow]"));
 
-        bdv = new BdvHandlePanel( frame, Bdv.options().axisOrder(AxisOrder.XYC).is2D() );
+        bdv = new BdvHandlePanel( frame, Bdv.options().is2D() );
         frame.pack();
         
         
@@ -118,8 +99,26 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		
 		
 		
+		overlay = new BdvOverlay()
+		{
+			@Override
+			protected void draw( final Graphics2D g )
+			{
 
+				g.setColor( Color.RED );
 
+					g.drawOval(100, 10, 20, 20);
+			}
+		};
+		
+		
+		
+		updateOverlayMask();
+		
+		
+		
+		
+	
 	}
 	
 	public void updateImage() {     
@@ -164,15 +163,16 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	}
 	
 	
+
 	
 	
 	
-	public void setController(ColonyController controller) {
+	public void setController(ColonyController< T > controller) {
 		this.controller=controller;
 	}
 	
 	public void updateOverlayMask(){
-		BdvFunctions.showOverlay(overlayMask, "test overlay", Bdv.options().addTo(bdv));
+		BdvFunctions.showOverlay(overlay, "test overlay", Bdv.options().addTo(bdv));
 	}
 	
 	
@@ -181,6 +181,10 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	
 	class MaskPanel extends JPanel{
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		JButton loadDataForMaskBtn;
 		JToggleButton drawMaskTBtn;
 		JButton saveMaskBtn;
@@ -190,7 +194,6 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		{
 
 			setLayout(new GridLayout(2,2,2,2));
-			Dimension d=this.getSize();
 			
 			loadDataForMaskBtn=new JButton("Load data for mask");
 			add(loadDataForMaskBtn);
@@ -214,6 +217,10 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 	
 	class AlignPanel extends JPanel{
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		JButton selectAddDataBtn;
 		JButton alignBtn;
 		JButton divideBtn;
@@ -222,8 +229,7 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		{
 
 			setLayout(new GridLayout(3,1,2,2));
-			Dimension d=this.getSize();
-			
+
 			selectAddDataBtn=new JButton("Select additional data");
 			add(selectAddDataBtn);
 			selectAddDataBtn.addActionListener(eventHandler);
@@ -239,25 +245,6 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 		}
 	}
 	
-	
-	 
-//	private BigDataViewerUI createBDV(Context ctx) {
-//		final JFrame frame = new JFrame("Blob Detection");
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		final BigDataViewerUI bdvUI = new BigDataViewerUI<>(frame, ctx,BdvOptions.options().preferredSize(800, 800));
-//		frame.add(bdvUI.getPanel());
-//		frame.pack();
-//		frame.setVisible(true);
-//		return bdvUI;
-//		
-//	}
-	
-	
-
-	
-//	public BigDataViewerUI getBigDataViewerUI() {
-//		return this.bdvUI;
-//	}
 	
 	
 	public class EventHandler implements ActionListener{
@@ -279,6 +266,10 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 			
 			if(e.getSource()==alignPanel.selectAddDataBtn){
 				controller.selectAddDataBtnAction();
+			}
+			
+			if(e.getSource()==alignPanel.alignBtn){
+				controller.alignBtnAction();
 			}
 			
 			

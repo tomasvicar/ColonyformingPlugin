@@ -1,46 +1,40 @@
 package cz.vutbr.ubmi;
 
-import java.awt.Color;
+
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
-import org.scijava.ui.behaviour.Behaviour;
-import org.scijava.ui.behaviour.BehaviourMap;
 import org.scijava.ui.behaviour.ClickBehaviour;
 import org.scijava.ui.behaviour.DragBehaviour;
 import org.scijava.ui.behaviour.io.InputTriggerConfig;
 import org.scijava.ui.behaviour.util.Behaviours;
-import org.scijava.ui.behaviour.util.TriggerBehaviourBindings;
+
 
 
 import cz.vutbr.ubmi.ColonyModel.MaskCircle;
 import ij.io.Opener;
-import io.scif.img.IO;
-import io.scif.img.ImgOpener;
-import io.scif.img.SCIFIOImgPlus;
+
 import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
 import net.imglib2.img.ImagePlusAdapter;
-import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Pair;
+
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 
 public class ColonyController< T extends RealType< T >> {
 	
-	public ColonyModel model;
-	public ColonyView view;
+	public ColonyModel< T > model;
+	public ColonyView< T > view;
 	public OpService opService;
 	
-	public ColonyController(ColonyModel model,ColonyView view, OpService opService) {
+	public ColonyController(ColonyModel< T > model,ColonyView< T > view, OpService opService) {
 		this.model=model;
 		this.view=view;
 		this.opService=opService;
@@ -385,6 +379,12 @@ public class ColonyController< T extends RealType< T >> {
 
 
 		}
+		
+	}
+
+
+	public void alignBtnAction() {
+		
 		
 	}
 	

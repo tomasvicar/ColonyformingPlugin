@@ -3,13 +3,12 @@ package cz.vutbr.ubmi;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.List;
 
 import bdv.util.BdvOverlay;
 import cz.vutbr.ubmi.ColonyModel.MaskCircle;
 import net.imglib2.RealPoint;
 import net.imglib2.realtransform.AffineTransform2D;
-import net.imglib2.util.LinAlgHelpers;
+
 
 public class OverlayMask extends BdvOverlay {
 	
@@ -30,16 +29,21 @@ public class OverlayMask extends BdvOverlay {
 		final AffineTransform2D t = new AffineTransform2D();
 		getCurrentTransform2D( t );
 		
-		for (MaskCircle cl : cs) {
-			MaskCircle cg=l2g(cl,t);
+		
+		for (MaskCircle cg : cs) {
 			
-			g.setColor(Color.RED);
+//			if (cg.t==info.getTimePointIndex())
+//			{
 			
-			g.drawOval((int)(cg.x-cg.r), (int)(cg.y-cg.r), (int)(cg.r*2), (int)(cg.r*2));
+				MaskCircle cl=g2l(cg,t);
+				
+				g.setColor(Color.RED);
+				
+				g.drawOval((int)(cl.x-cl.r), (int)(cl.y-cl.r), (int)(cl.r*2), (int)(cl.r*2));
+				
+				g.drawOval((int)(cl.x-1), (int)(cl.y-1), (int)(2), (int)(2));
 			
-			g.drawOval((int)(cg.x-1), (int)(cg.y-1), (int)(2), (int)(2));
-			
-			
+//			}
 		}
 
 		
@@ -47,13 +51,13 @@ public class OverlayMask extends BdvOverlay {
 	}
 	
 	
-	private MaskCircle l2g(MaskCircle c,AffineTransform2D t) {
-		double[] lPos = new double[ 2 ];
+	private MaskCircle g2l(MaskCircle c,AffineTransform2D t) {
 		double[] gPos = new double[ 2 ];
+		double[] lPos = new double[ 2 ];
 		
 		RealPoint planarPoint = new RealPoint( c.x, c.y );
-		planarPoint.localize( lPos );
-		t.apply( lPos, gPos );
+		planarPoint.localize( gPos );
+		t.apply( gPos, lPos );
 		
 		double t0= t.get(0, 0);
 		double t1= t.get(0, 1);
@@ -63,8 +67,8 @@ public class OverlayMask extends BdvOverlay {
 		double s=Math.sqrt(Math.pow(t0,2)+Math.pow(t1,2));
 		
 		double r= (c.r*s);
-		double x=gPos[0];
-		double y=gPos[1];
+		double x=lPos[0];
+		double y=lPos[1];
 		
 		
 		

@@ -12,36 +12,16 @@ import net.imagej.Dataset;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.converter.Converters;
-import net.imglib2.img.Img;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.real.DoubleType;
-import net.imglib2.util.Util;
-import net.miginfocom.swing.MigLayout;
 
-import org.scijava.Context;
-import org.scijava.ItemVisibility;
+import net.imglib2.type.numeric.RealType;
+
+
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.ui.UIService;
 
 import ij.IJ;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
-
 
 
 
@@ -71,11 +51,10 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 	public OpService opService;
 
 	
-	JFrame  frame;
 
-	ColonyView view;
-	ColonyModel model;
-	ColonyController controller;
+	ColonyView< T > view;
+	ColonyModel< T > model;
+	ColonyController< T > controller;
 
 	@Override
 	public void run() {
@@ -83,9 +62,9 @@ public class ColonyformingPlugin<T extends RealType<T>> implements Command {
 		
 		RandomAccessibleInterval<T> img = (RandomAccessibleInterval<T> ) currentData.getImgPlus();
 		
-		this.model= new ColonyModel(img,opService);
-		this.view = new ColonyView(model,opService);
-		this.controller = new ColonyController(model,view,opService);
+		this.model= new ColonyModel< T >(img,opService);
+		this.view = new ColonyView< T >(model,opService);
+		this.controller = new ColonyController< T >(model,view,opService);
 		
 
 	}
