@@ -21,9 +21,12 @@ import bdv.util.BdvOverlay;
 import bdv.util.BdvSource;
 import net.imagej.ops.OpService;
 import net.imglib2.Cursor;
+import net.imglib2.FinalDimensions;
 import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.RealType;
@@ -88,7 +91,7 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
         frame.setMinimumSize(new Dimension(1200, 800));
         frame.setLayout(new MigLayout("fillx, filly, ins 0", "[grow]", "[grow]"));
 
-        bdv = new BdvHandlePanel( frame, Bdv.options() );
+        bdv = new BdvHandlePanel( frame, Bdv.options().axisOrder(AxisOrder.XYC).is2D() );
         frame.pack();
         
         
@@ -122,7 +125,30 @@ public class ColonyView< T extends RealType< T >>  extends JPanel {
 //        
 //        
 
-        BdvFunctions.show(model.img,"fdsfd",Bdv.options().addTo(bdv).axisOrder(AxisOrder.XYCT));
+        ArrayImgFactory<ARGBType> fac = new ArrayImgFactory<>(new ARGBType());
+        Img<ARGBType> rgbImg = fac.create(new FinalDimensions(model.img.dimension(0), model.img.dimension(1)));
+        
+        RandomAccess<T> ra = model.img.randomAccess();
+        Cursor<ARGBType> rgbC = Views.flatIterable(rgbImg).cursor();
+        
+        int[] pos = new int[3];
+        while (rgbC.hasNext()) {
+        	rgbC.fwd();
+        	pos[0] = rgbC.getIntPosition(0);
+        	pos[1] = rgbC.getIntPosition(1);
+        	pos[2] = 0;
+        	ra.setPosition(pos);
+        	float r = ra.get().getRealFloat();
+        	pos[2] = 1;
+        	ra.setPosition(pos);
+        	float g = ra.get().getRealFloat();
+        	pos[2] = 2;
+        	ra.setPosition(pos);
+        	float b = ra.get().getRealFloat();
+        	rgbC.get().set(new ARGBType(ARGBType.rgba(r/255f, g/255f, b/255f, 1)));
+        }
+        BdvFunctions.show(rgbImg,"fdsfd",Bdv.options().addTo(bdv));
+        
         
         
         

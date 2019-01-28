@@ -2,9 +2,6 @@ package cz.vutbr.ubmi;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
 import javax.swing.BoxLayout;
 import java.awt.GridLayout;
 import net.miginfocom.swing.MigLayout;
